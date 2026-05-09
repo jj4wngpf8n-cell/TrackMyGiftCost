@@ -162,6 +162,28 @@ class GiftTracker {
         return this.clients.reduce((sum, client) => sum + this.getClientTotal(client), 0);
     }
 
+    // Calculate and Show Total
+    calculateTotal() {
+        if (this.clients.length === 0) {
+            alert('No clients added yet!');
+            return;
+        }
+
+        let message = '📊 GIFT COST BREAKDOWN\n';
+        message += '═══════════════════════════════════\n\n';
+
+        this.clients.forEach(client => {
+            const total = this.getClientTotal(client);
+            message += `👤 ${client.name}: $${total.toFixed(2)}\n`;
+        });
+
+        const grandTotal = this.getGrandTotal();
+        message += '\n═══════════════════════════════════\n';
+        message += `💰 GRAND TOTAL: $${grandTotal.toFixed(2)}`;
+
+        alert(message);
+    }
+
     // Update Grand Total
     updateGrandTotal() {
         const grandTotal = this.getGrandTotal();
@@ -351,6 +373,11 @@ class GiftTracker {
 
         document.getElementById('backBtn').addEventListener('click', () => {
             this.hideDetailsSection();
+        });
+
+        // Calculate Total button
+        document.getElementById('calculateTotalBtn').addEventListener('click', () => {
+            this.calculateTotal();
         });
 
         // Preset management

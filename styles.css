@@ -240,6 +240,19 @@ header p {
     background: #dc2626;
 }
 
+.btn-calculate {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    margin-left: 10px;
+    padding: 10px 15px;
+    font-size: 0.9rem;
+}
+
+.btn-calculate:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
 /* Clients List */
 .clients-list {
     display: grid;
@@ -315,10 +328,19 @@ header p {
     opacity: 0.95;
 }
 
+.grand-total-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
 .grand-total-amount {
     font-size: 2.5rem;
     font-weight: 900;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    min-width: 150px;
 }
 
 /* Details Section */
@@ -536,6 +558,16 @@ header p {
 
     .grand-total-amount {
         font-size: 2rem;
+    }
+
+    .grand-total-display {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .btn-calculate {
+        margin-left: 0;
+        width: 100%;
     }
 }
 
