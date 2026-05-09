@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gift Cost Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎁 Gift Cost Tracker</h1>
+            <p>Manage clients and track gift purchases</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Left Sidebar: Item Management -->
+            <aside class="sidebar">
+                <section class="preset-items">
+                    <h2>Preset Items</h2>
+                    <div id="presetList" class="preset-list">
+                        <!-- Populated by JS -->
+                    </div>
+                    <button id="addPresetBtn" class="btn btn-secondary">+ Add Preset Item</button>
+                </section>
+
+                <section class="item-management">
+                    <h3>Create Preset Item</h3>
+                    <input type="text" id="presetName" placeholder="Item name" class="input-field">
+                    <input type="number" id="presetPrice" placeholder="Price" step="0.01" min="0" class="input-field">
+                    <button id="savePresetBtn" class="btn btn-primary">Save Item</button>
+                </section>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main-area">
+                <!-- Client Management Section -->
+                <section class="clients-section">
+                    <h2>Clients</h2>
+                    <div class="client-input-group">
+                        <input type="text" id="clientName" placeholder="Enter client name" class="input-field">
+                        <button id="addClientBtn" class="btn btn-primary">Add Client</button>
+                    </div>
+                    <div id="clientsList" class="clients-list">
+                        <!-- Clients populated by JS -->
+                    </div>
+                </section>
+
+                <!-- Client Details Section -->
+                <section id="detailsSection" class="details-section" style="display: none;">
+                    <div class="details-header">
+                        <button id="backBtn" class="btn btn-secondary">← Back</button>
+                        <h2 id="clientTitle">Client Details</h2>
+                    </div>
+
+                    <div class="add-item-section">
+                        <h3>Add Purchase Item</h3>
+                        <div class="item-input-group">
+                            <select id="itemSelect" class="input-field">
+                                <option value="">-- Select Item --</option>
+                            </select>
+                            <input type="number" id="customItemPrice" placeholder="Custom price" step="0.01" min="0" class="input-field" style="display:none;">
+                            <button id="addItemBtn" class="btn btn-primary">Add Item</button>
+                        </div>
+                        <div class="divider or-divider">OR</div>
+                        <div class="item-input-group">
+                            <input type="text" id="customItemName" placeholder="Custom item name" class="input-field">
+                            <input type="number" id="customItemPrice2" placeholder="Price" step="0.01" min="0" class="input-field">
+                            <button id="addCustomItemBtn" class="btn btn-primary">Add Custom Item</button>
+                        </div>
+                    </div>
+
+                    <div class="purchases-section">
+                        <h3>Purchases for <span id="clientNameSpan"></span></h3>
+                        <table class="purchases-table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Price</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="purchasesTableBody">
+                                <!-- Purchases populated by JS -->
+                            </tbody>
+                            <tfoot>
+                                <tr class="total-row">
+                                    <td colspan="2"><strong>Total:</strong></td>
+                                    <td><strong id="totalPrice">$0.00</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal for adding preset items -->
+    <div id="presetModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Add New Preset Item</h3>
+            <input type="text" id="modalPresetName" placeholder="Item name" class="input-field">
+            <input type="number" id="modalPresetPrice" placeholder="Price" step="0.01" min="0" class="input-field">
+            <button id="modalSaveBtn" class="btn btn-primary">Save</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
