@@ -18,6 +18,7 @@
             <aside class="sidebar">
                 <section class="preset-items">
                     <h2>Preset Items</h2>
+                    <p class="drag-hint">💡 Drag items onto clients to add purchases</p>
                     <div id="presetList" class="preset-list">
                         <!-- Populated by JS -->
                     </div>
@@ -43,6 +44,14 @@
                     </div>
                     <div id="clientsList" class="clients-list">
                         <!-- Clients populated by JS -->
+                    </div>
+                </section>
+
+                <!-- Grand Total Section -->
+                <section class="grand-total-section">
+                    <div class="grand-total-box">
+                        <h3>💰 Total Cost for All Clients</h3>
+                        <div id="grandTotal" class="grand-total-amount">$0.00</div>
                     </div>
                 </section>
 
@@ -106,6 +115,9 @@
             <button id="modalSaveBtn" class="btn btn-primary">Save</button>
         </div>
     </div>
+
+    <!-- Drag Preview -->
+    <div id="dragPreview" class="drag-preview" style="display: none;"></div>
 
     <script src="app.js"></script>
 </body>

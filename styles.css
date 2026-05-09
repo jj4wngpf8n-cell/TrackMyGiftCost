@@ -84,6 +84,13 @@ header p {
     color: var(--text-primary);
 }
 
+.drag-hint {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    font-style: italic;
+}
+
 .preset-list {
     display: flex;
     flex-direction: column;
@@ -101,13 +108,19 @@ header p {
     background: var(--bg-color);
     border-radius: 6px;
     border-left: 3px solid var(--secondary-color);
-    cursor: pointer;
+    cursor: grab;
     transition: all 0.2s ease;
+    user-select: none;
+}
+
+.preset-item:active {
+    cursor: grabbing;
 }
 
 .preset-item:hover {
     background: #f1f5f9;
     transform: translateX(5px);
+    box-shadow: var(--shadow-lg);
 }
 
 .preset-item-info {
@@ -148,7 +161,8 @@ header p {
 }
 
 .clients-section,
-.details-section {
+.details-section,
+.grand-total-section {
     background: var(--card-bg);
     padding: 25px;
     border-radius: 8px;
@@ -241,12 +255,22 @@ header p {
     cursor: pointer;
     transition: all 0.2s ease;
     text-align: center;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .client-card:hover {
     border-color: var(--primary-color);
     box-shadow: var(--shadow-lg);
     transform: translateY(-5px);
+}
+
+.client-card.drag-over {
+    border: 2px dashed var(--success-color);
+    background: rgba(16, 185, 129, 0.05);
+    transform: scale(1.02);
 }
 
 .client-card-name {
@@ -272,6 +296,29 @@ header p {
 .client-card-actions button {
     padding: 6px 12px;
     font-size: 0.85rem;
+}
+
+/* Grand Total Section */
+.grand-total-section {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    padding: 30px;
+    text-align: center;
+}
+
+.grand-total-box {
+    color: white;
+}
+
+.grand-total-box h3 {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    opacity: 0.95;
+}
+
+.grand-total-amount {
+    font-size: 2.5rem;
+    font-weight: 900;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Details Section */
@@ -374,6 +421,20 @@ header p {
     background: #dc2626;
 }
 
+/* Drag Preview */
+.drag-preview {
+    position: fixed;
+    pointer-events: none;
+    padding: 10px 15px;
+    background: var(--secondary-color);
+    color: white;
+    border-radius: 6px;
+    font-weight: 600;
+    box-shadow: var(--shadow-lg);
+    z-index: 999;
+    opacity: 0.9;
+}
+
 /* Modal */
 .modal {
     display: none;
@@ -472,6 +533,10 @@ header p {
     .purchases-table td {
         padding: 10px;
     }
+
+    .grand-total-amount {
+        font-size: 2rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -485,7 +550,12 @@ header p {
 
     .sidebar section,
     .clients-section,
-    .details-section {
+    .details-section,
+    .grand-total-section {
         padding: 15px;
+    }
+
+    .grand-total-amount {
+        font-size: 1.8rem;
     }
 }

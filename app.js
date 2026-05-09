@@ -4,6 +4,7 @@ class GiftTracker {
         this.clients = this.loadFromStorage('clients') || [];
         this.presets = this.loadFromStorage('presets') || this.getDefaultPresets();
         this.currentClient = null;
+        this.draggedPreset = null;
         this.init();
     }
 
@@ -11,6 +12,7 @@ class GiftTracker {
         this.setupEventListeners();
         this.renderPresets();
         this.renderClients();
+        this.updateGrandTotal();
     }
 
     getDefaultPresets() {
@@ -55,6 +57,7 @@ class GiftTracker {
         this.clients.push(client);
         this.saveToStorage('clients', this.clients);
         this.renderClients();
+        this.updateGrandTotal();
         document.getElementById('clientName').value = '';
     }
 
@@ -63,6 +66,7 @@ class GiftTracker {
             this.clients = this.clients.filter(c => c.id !== clientId);
             this.saveToStorage('clients', this.clients);
             this.renderClients();
+            this.updateGrandTotal();
         }
     }
 
@@ -116,6 +120,26 @@ class GiftTracker {
         this.currentClient.purchases.push(purchase);
         this.saveToStorage('clients', this.clients);
         this.renderClientDetails();
+        this.renderClients();
+        this.updateGrandTotal();
+    }
+
+    addPurchaseToClientById(clientId, presetId) {
+        const client = this.clients.find(c => c.id === clientId);
+        const preset = this.presets.find(p => p.id === presetId);
+
+        if (!client || !preset) return;
+
+        const purchase = {
+            id: Date.now(),
+            name: preset.name,
+            price: preset.price,
+            isPreset: true
+        };
+        client.purchases.push(purchase);
+        this.saveToStorage('clients', this.clients);
+        this.renderClients();
+        this.updateGrandTotal();
     }
 
     deletePurchase(purchaseId) {
@@ -125,11 +149,26 @@ class GiftTracker {
         );
         this.saveToStorage('clients', this.clients);
         this.renderClientDetails();
+        this.renderClients();
+        this.updateGrandTotal();
     }
 
     // Calculations
     getClientTotal(client) {
         return client.purchases.reduce((sum, p) => sum + p.price, 0);
+    }
+
+    getGrandTotal() {
+        return this.clients.reduce((sum, client) => sum + this.getClientTotal(client), 0);
+    }
+
+    // Update Grand Total
+    updateGrandTotal() {
+        const grandTotal = this.getGrandTotal();
+        const grandTotalElement = document.getElementById('grandTotal');
+        if (grandTotalElement) {
+            grandTotalElement.textContent = `$${grandTotal.toFixed(2)}`;
+        }
     }
 
     // Rendering Methods
@@ -146,14 +185,24 @@ class GiftTracker {
             const total = this.getClientTotal(client);
             const card = document.createElement('div');
             card.className = 'client-card';
+            card.id = `client-${client.id}`;
+            card.draggable = false;
             card.innerHTML = `
-                <div class="client-card-name">${client.name}</div>
-                <div class="client-card-total">$${total.toFixed(2)}</div>
+                <div>
+                    <div class="client-card-name">${client.name}</div>
+                    <div class="client-card-total">$${total.toFixed(2)}</div>
+                </div>
                 <div class="client-card-actions">
                     <button class="btn btn-primary" onclick="tracker.selectClient(${client.id})">View</button>
                     <button class="btn btn-danger" onclick="tracker.deleteClient(${client.id})">Delete</button>
                 </div>
             `;
+
+            // Add drag and drop listeners
+            card.addEventListener('dragover', (e) => this.handleDragOver(e, card));
+            card.addEventListener('dragleave', (e) => this.handleDragLeave(e, card));
+            card.addEventListener('drop', (e) => this.handleDrop(e, client.id));
+
             container.appendChild(card);
         });
     }
@@ -165,6 +214,8 @@ class GiftTracker {
         this.presets.forEach(preset => {
             const item = document.createElement('div');
             item.className = 'preset-item';
+            item.draggable = true;
+            item.id = `preset-${preset.id}`;
             item.innerHTML = `
                 <div class="preset-item-info">
                     <div class="preset-item-name">${preset.name}</div>
@@ -172,6 +223,11 @@ class GiftTracker {
                 </div>
                 <button class="preset-item-delete" onclick="tracker.deletePreset(${preset.id})">Delete</button>
             `;
+
+            // Drag event listeners
+            item.addEventListener('dragstart', (e) => this.handleDragStart(e, preset));
+            item.addEventListener('dragend', (e) => this.handleDragEnd(e));
+
             container.appendChild(item);
         });
     }
@@ -227,6 +283,56 @@ class GiftTracker {
         document.getElementById('detailsSection').style.display = 'none';
         document.getElementById('clientsList').parentElement.style.display = 'block';
         this.currentClient = null;
+    }
+
+    // Drag and Drop Methods
+    handleDragStart(e, preset) {
+        this.draggedPreset = preset;
+        e.dataTransfer.effectAllowed = 'copy';
+        e.dataTransfer.setData('text/plain', JSON.stringify(preset));
+        
+        // Show preview
+        const preview = document.getElementById('dragPreview');
+        preview.textContent = `🎁 ${preset.name} - $${preset.price.toFixed(2)}`;
+        preview.style.display = 'block';
+        e.dataTransfer.setDragImage(preview, 0, 0);
+    }
+
+    handleDragEnd(e) {
+        const preview = document.getElementById('dragPreview');
+        preview.style.display = 'none';
+        
+        // Remove drag-over class from all cards
+        document.querySelectorAll('.client-card').forEach(card => {
+            card.classList.remove('drag-over');
+        });
+    }
+
+    handleDragOver(e, card) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
+        card.classList.add('drag-over');
+    }
+
+    handleDragLeave(e, card) {
+        card.classList.remove('drag-over');
+    }
+
+    handleDrop(e, clientId) {
+        e.preventDefault();
+        
+        const card = e.currentTarget;
+        card.classList.remove('drag-over');
+        
+        if (this.draggedPreset) {
+            this.addPurchaseToClientById(clientId, this.draggedPreset.id);
+            // Show success feedback
+            const originalBG = card.style.background;
+            card.style.background = 'rgba(16, 185, 129, 0.1)';
+            setTimeout(() => {
+                card.style.background = originalBG;
+            }, 600);
+        }
     }
 
     setupEventListeners() {
